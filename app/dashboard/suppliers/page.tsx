@@ -1,0 +1,13 @@
+import Link from 'next/link'
+import { requireActiveTenant } from '@/lib/tenant'
+import { createClient } from '@/lib/supabase/server'
+import { createSupplierAction } from '@/actions/suppliers'
+export const dynamic = 'force-dynamic'
+export default async function SuppliersPage() {
+  const { tenant } = await requireActiveTenant()
+  const supabase = await createClient()
+  const { data, error } = await supabase.from('suppliers').select('id,legal_name,trade_name,tax_id,email,phone,payment_terms_days,is_active').eq('tenant_id', tenant.tenant_id).order('legal_name')
+  return <><header className="top"><Link href="/dashboard" className="brand">🌿 MERMA <span>CERO</span></Link><div className="row"><Link className="btn secondary" href="/dashboard/purchases">Compras</Link><Link className="btn secondary" href="/dashboard">Panel</Link></div></header><main className="dashboard"><p className="eyebrow">COMPRAS · DIRECTORIO</p><h1>Proveedores</h1><p>Datos fiscales y comerciales de proveedores de {tenant.country_code === 'PE' ? 'Perú' : 'España'}.</p>
+    {['owner','admin','manager'].includes(tenant.role) && <section className="panel"><h2>Nuevo proveedor</h2><form action={createSupplierAction} className="form-grid"><label className="field"><span>Razón social</span><input name="legal_name" required minLength={2} maxLength={180}/></label><label className="field"><span>Nombre comercial</span><input name="trade_name" maxLength={180}/></label><label className="field"><span>{tenant.country_code === 'PE' ? 'RUC' : 'NIF'}</span><input name="tax_id" maxLength={32}/></label><label className="field"><span>Correo</span><input name="email" type="email" maxLength={254}/></label><label className="field"><span>Teléfono</span><input name="phone" maxLength={40}/></label><label className="field"><span>Plazo de pago (días)</span><input name="payment_terms_days" type="number" min="0" max="3650" defaultValue="0"/></label><button className="btn" type="submit">Guardar proveedor</button></form></section>}
+    {error && <p className="error">No se pudieron cargar los proveedores: {error.message}</p>}<section className="section"><h2>Directorio</h2><div className="table-wrap"><table><thead><tr><th>Razón social</th><th>Nombre comercial</th><th>Identificación fiscal</th><th>Contacto</th><th>Pago</th><th>Estado</th></tr></thead><tbody>{(data ?? []).map(s=><tr key={s.id}><td>{s.legal_name}</td><td>{s.trade_name || '—'}</td><td>{s.tax_id || '—'}</td><td>{s.email || s.phone || '—'}</td><td>{s.payment_terms_days} días</td><td>{s.is_active ? 'Activo' : 'Inactivo'}</td></tr>)}{!data?.length && <tr><td colSpan={6} className="empty">Todavía no hay proveedores.</td></tr>}</tbody></table></div></section></main></>
+}
