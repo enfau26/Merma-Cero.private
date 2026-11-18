@@ -63,7 +63,7 @@ export async function receiveLotAction(formData: FormData) {
   if (error) throw new Error(error.message);
   revalidatePath('/dashboard/inventory');
   revalidatePath('/dashboard/reports');
-  return data as string;
+  // Server Action used by a form: intentionally return void;
 }
 
 export async function consumeFefoAction(formData: FormData) {
@@ -85,7 +85,7 @@ export async function consumeFefoAction(formData: FormData) {
   if (error) throw new Error(error.message);
   revalidatePath('/dashboard/inventory');
   revalidatePath('/dashboard/reports');
-  return data;
+  // Server Action used by a form: intentionally return void;
 }
 
 export async function recordWasteAction(formData: FormData) {
@@ -104,5 +104,5 @@ export async function recordWasteAction(formData: FormData) {
   if (error) throw new Error(error.message);
   revalidatePath('/dashboard/inventory');
   revalidatePath('/dashboard/reports');
-  return data as string;
+  // Server Action used by a form: intentionally return void;
 }
