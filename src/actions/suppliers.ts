@@ -23,8 +23,8 @@ export async function createSupplierAction(formData: FormData) {
     created_by: user.id,
   };
   if (!Number.isInteger(payload.payment_terms_days)) throw new Error('Plazo de pago no válido');
-  const { data, error } = await supabase.from('suppliers').insert(payload).select('id').single();
-  if (error) throw new Error(error.message);
-  revalidatePath('/dashboard/suppliers');
-  return data.id as string;
+  const { data, error } = await 
+  const { error } = await supabase.from('suppliers').insert(payload);
+if (error) throw new Error(error.message);
+revalidatePath('/dashboard/suppliers');
 }
